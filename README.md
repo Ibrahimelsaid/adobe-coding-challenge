@@ -21,7 +21,7 @@ This program is implemented as a **command-line tool**.
 ## 🚀 Steps to Run the Program
 
 1. **Clone the repository:**
-   git clone https://github.com/yourusername/adobe-coding-challenge.git
+   git clone https://github.com/Ibrahimelsaid/adobe-coding-challenge.git/
 
 2. **Make the script executable:**
     chmod +x src/json_deduplicator.py
