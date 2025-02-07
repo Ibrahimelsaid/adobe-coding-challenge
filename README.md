@@ -30,9 +30,30 @@ This program is implemented as a **command-line tool**.
     ./src/json_deduplicator.py data/leads.json (input file)
 
 4. **Check the output files:**
-    cat data/deduplicated_leads.json
-    cat data/change_log.json
+    cat data/modified_leads.json
+    cat data/logs.json
 
 5. **Run tests:**
     pytest tests/
+
+### Log File Summary:
+
+The log file tracks the deduplication process and records key actions on each record. It is stored in a **JSON format**, with each entry representing a major action.
+
+### Key Points:
+- **Action Types:**
+  - **`new_record`**: A new record was found.
+  - **`updated`**: An existing record was updated.
+
+- **Log Format:**
+  Each entry contains:
+  - **`action`**: Describes what happened (e.g., `new_record`, `updated`).
+  - **`id`**: The record's unique ID.
+  - **`email`**: The email associated with the record.
+  - **`source_record`**: The record before any changes (present for record_updated).
+  - **`output_record`**: The updated record (present for record_updated).
+  - **`field_changes`**: The specific changes made to the record.
+
+
+
 
