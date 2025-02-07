@@ -3,6 +3,12 @@ from datetime import datetime
 
 class JSONDeduplicator:
     def __init__(self, input_file):
+        """
+        Initialize the JSONDeduplicator with an input file and load the data.
+
+        Args:
+            input_file (str): Path to the input JSON file.
+        """
         self.input_file = input_file
         self.data = self.load_data()
         self.latest_records = {} 
@@ -13,12 +19,26 @@ class JSONDeduplicator:
         self.seen_emails = set() 
 
     def load_data(self):
-        """Load data from input JSON file."""
+        """
+        Load data from the input JSON file.
+
+        Returns:
+            list: List of lead records extracted from the JSON file.
+        """
         with open(self.input_file, "r") as file:
             return json.load(file).get("leads", [])
 
     def has_field_changes(self, new_record, old_record):
-        """Check if there are actual field changes between records."""
+        """
+        Check if there are actual field changes between new and old records.
+
+        Args:
+            new_record (dict): The new lead record.
+            old_record (dict): The old lead record to compare against.
+
+        Returns:
+            list: List of field changes with details of each change (field, from, to).
+        """
         if not old_record:
             return []
             
@@ -33,7 +53,16 @@ class JSONDeduplicator:
         return changes
 
     def should_update_record(self, new_record, existing_record):
-        """Determine if the new record should replace the existing record."""
+        """
+        Determine if the new record should replace the existing record.
+
+        Args:
+            new_record (dict): The new lead record.
+            existing_record (dict): The existing lead record to compare against.
+
+        Returns:
+            bool: True if the new record should replace the existing one, otherwise False.
+        """
         if not existing_record:
             return True
             
@@ -43,7 +72,12 @@ class JSONDeduplicator:
         return new_date >= existing_date
 
     def deduplicate(self):
-        """Deduplicate records based on ID and email."""
+        """
+        Deduplicate records based on unique ID and email, updating the records as necessary.
+
+        This method processes the input data, identifies duplicates, and updates the records
+        based on the latest entry date and field changes. It also tracks the change history.
+        """
         for record in self.data:
             record_id = record["_id"]
             record_email = record["email"]
@@ -95,7 +129,12 @@ class JSONDeduplicator:
                     del self.email_map[existing_by_id["email"]]
 
     def generate_logs(self):
-        """Generate logs based on change history."""
+        """
+        Generate logs based on the change history of the records.
+
+        Returns:
+            list: List of log entries describing the updates made to the records.
+        """
         logs = []
         
         for record_id, history in self.change_history.items():
@@ -123,7 +162,12 @@ class JSONDeduplicator:
         return logs
 
     def save_results(self):
-        """Save deduplicated records to a JSON file."""
+        """
+        Save the deduplicated records to a JSON file.
+
+        The records are sorted by entry date before being saved.
+
+        """
         sorted_records = sorted(
             self.latest_records.values(),
             key=lambda r: datetime.fromisoformat(r["entryDate"])
@@ -133,8 +177,13 @@ class JSONDeduplicator:
             json.dump({"leads": sorted_records}, outfile, indent=4)
 
     def save_log(self):
-        """Generate and save the log file."""
+        """
+        Generate and save a log file with changes made during deduplication.
+
+        The log file includes details about record updates and newly added records.
+        """
         logs = self.generate_logs()
         with open(self.log_file_name, "w") as logfile:
             json.dump(logs, logfile, indent=4)
 
+            
